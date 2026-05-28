@@ -151,3 +151,132 @@ input::placeholder, textarea::placeholder { color: var(--text-tertiary); }
 ::-webkit-scrollbar-track { background: var(--bg-secondary); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent-blue); }
+
+/* ── GLASSMORPHISM ── */
+.glass {
+  background: rgba(255,255,255,0.80);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255,255,255,0.55);
+}
+
+/* ── GRADIENT TEXT ── */
+.gradient-text {
+  background: linear-gradient(135deg, #2E70FF 0%, #65A30D 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── CARD SHINE on hover ── */
+.card-shine {
+  position: relative;
+  overflow: hidden;
+}
+.card-shine::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -120%;
+  width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+.card-shine:hover::after { left: 160%; }
+
+/* ── HERO BACKGROUND PATTERN ── */
+.hero-dots {
+  background-image: radial-gradient(rgba(46,112,255,0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ── BADGE PULSE ── */
+@keyframes badge-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+  50%       { transform: scale(1.1); box-shadow: 0 0 0 4px rgba(239,68,68,0); }
+}
+.badge-pulse { animation: badge-pulse 2.2s ease infinite; }
+
+/* ── FLOAT ANIMATION ── */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+.float { animation: float 3.6s ease-in-out infinite; }
+
+/* ── GLOW BUTTON ── */
+.btn-glow {
+  position: relative;
+  overflow: hidden;
+}
+.btn-glow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.20) 0%, transparent 60%);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* ── STAGGER CHILDREN ── */
+.stagger > * { animation: fadeUp 0.4s cubic-bezier(0.4,0,0.2,1) both; }
+.stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger > *:nth-child(2) { animation-delay: 0.10s; }
+.stagger > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger > *:nth-child(4) { animation-delay: 0.20s; }
+.stagger > *:nth-child(5) { animation-delay: 0.25s; }
+
+/* ── BETTER BUTTON TRANSITIONS ── */
+.btn-primary {
+  background: var(--accent);
+  color: #0F172A;
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+  border-radius: inherit;
+  pointer-events: none;
+}
+.btn-primary:hover { background: var(--accent-dark); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(101,163,13,0.25); }
+
+/* ── INPUT GLOW FOCUS ── */
+input:focus, textarea:focus, select:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(46,112,255,0.10);
+}
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* ── SKELETON PULSE ── */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
+}
+.skeleton { animation: skeleton-pulse 1.5s ease-in-out infinite; background: var(--bg-secondary); border-radius: 8px; }
+
+/* ── HERO GRADIENT ORBS ── */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(0px);
+}
+
+/* ── BOTTOM NAV ITEM ACTIVE GLOW ── */
+@keyframes nav-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.35) translateY(-3px); }
+  100% { transform: scale(1.25) translateY(-2px); }
+}

@@ -2,11 +2,13 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { crearCurso, crearServicio } from '../api/api'
+import { useToast } from '../context/ToastContext'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export default function Publicar() {
   const { usuario } = useAuth()
   const navigate = useNavigate()
+  const toast = useToast()
 
   const [tipo, setTipo]           = useState('CURSO')
   const [titulo, setTitulo]       = useState('')
@@ -41,7 +43,7 @@ export default function Publicar() {
           usuarioId: usuario.id,
         })
       }
-      alert('¡Publicación creada exitosamente!')
+      toast('¡Publicación creada exitosamente! 🚀', 'success')
       navigate('/')
     } catch {
       setError('Error al publicar. Intenta de nuevo.')

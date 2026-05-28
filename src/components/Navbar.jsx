@@ -15,7 +15,6 @@ export default function Navbar() {
   const [indicatorStyle, setIndicatorStyle] = useState({})
   const [mounted, setMounted] = useState(false)
 
-  // Animate the sliding indicator under the active link
   useEffect(() => {
     if (!navRef.current) return
     const activeIndex = links.findIndex(l => l.to === location.pathname)
@@ -25,8 +24,8 @@ export default function Navbar() {
     if (!el) return
     const { offsetLeft, offsetWidth } = el
     setIndicatorStyle({
-      left: offsetLeft + offsetWidth / 2 - 16,
-      width: 32,
+      left: offsetLeft + offsetWidth / 2 - 18,
+      width: 36,
       opacity: 1,
     })
     if (!mounted) setMounted(true)
@@ -41,15 +40,15 @@ export default function Navbar() {
         left: 0,
         right: 0,
         height: 'var(--nav-height)',
-        background: '#FFFFFF',
-        borderTop: '1px solid #E2E8F0',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        boxShadow: '0 -2px 16px rgba(15,23,42,0.06)',
+        /* Semi-transparent so backdrop-filter actually blurs content behind it */
+        background: 'rgba(255,255,255,0.94)',
+        borderTop: '1px solid rgba(226,232,240,0.85)',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
+        boxShadow: '0 -4px 24px rgba(15,23,42,0.07)',
         display: 'flex',
         alignItems: 'stretch',
         zIndex: 100,
-        // Slide up on mount
         animation: 'slideUp 0.4s cubic-bezier(0.4,0,0.2,1) both',
       }}
     >
@@ -57,10 +56,10 @@ export default function Navbar() {
       <div style={{
         position: 'absolute',
         top: 0,
-        height: 2,
-        borderRadius: '0 0 4px 4px',
-        background: 'var(--accent-blue)',
-        boxShadow: '0 0 12px var(--accent-glow)',
+        height: 3,
+        borderRadius: '0 0 6px 6px',
+        background: 'linear-gradient(90deg, var(--accent-blue), #5b9aff)',
+        boxShadow: '0 0 16px var(--accent-glow)',
         transition: mounted
           ? 'left 0.35s cubic-bezier(0.4,0,0.2,1), width 0.35s cubic-bezier(0.4,0,0.2,1)'
           : 'none',
@@ -84,18 +83,19 @@ export default function Navbar() {
               gap: 3,
               textDecoration: 'none',
               position: 'relative',
-              // Stagger each item on mount
               animation: `fadeUp 0.4s cubic-bezier(0.4,0,0.2,1) ${0.05 + i * 0.06}s both`,
+              WebkitTapHighlightColor: 'transparent',
             }}
           >
-            {/* Emoji icon with bounce on active */}
+            {/* Icon */}
             <span style={{
               fontSize: 22,
               lineHeight: 1,
-              transition: 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s',
-              transform: activo ? 'scale(1.25) translateY(-2px)' : 'scale(1)',
-              opacity: activo ? 1 : 0.45,
+              transition: 'transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s',
+              transform: activo ? 'scale(1.28) translateY(-2px)' : 'scale(1)',
+              opacity: activo ? 1 : 0.42,
               display: 'block',
+              filter: activo ? 'drop-shadow(0 2px 6px rgba(46,112,255,0.35))' : 'none',
             }}>
               {l.emoji}
             </span>
@@ -112,11 +112,11 @@ export default function Navbar() {
               {l.label}
             </span>
 
-            {/* Ripple background on active */}
+            {/* Active background pill */}
             {activo && (
               <div style={{
                 position: 'absolute',
-                inset: '4px 8px',
+                inset: '4px 6px',
                 borderRadius: 10,
                 background: 'var(--accent-blue-bg)',
                 zIndex: -1,
@@ -135,4 +135,4 @@ export default function Navbar() {
       `}</style>
     </nav>
   )
-}{}
+}

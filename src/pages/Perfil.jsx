@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { getSaldo, actualizarCorreoPaypal, getCursos, getServicios, getHistorial } from '../api/api'
+import { useToast } from '../context/ToastContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -210,6 +211,7 @@ function EstadisticasModal({ usuarioId, onClose }) {
 export default function Perfil() {
   const { usuario, logout, esVendedor } = useAuth()
   const navigate = useNavigate()
+  const toast = useToast()
   const [saldo, setSaldo]               = useState(null)
   const [correoPaypal, setCorreoPaypal] = useState('')
   const [editPaypal, setEditPaypal]     = useState(false)
@@ -242,7 +244,10 @@ export default function Perfil() {
       await actualizarCorreoPaypal(usuario.id, { correoPaypal: nuevoCorreo })
       setCorreoPaypal(nuevoCorreo)
       setEditPaypal(false)
-    } catch { alert('Error al guardar') }
+      toast('Correo PayPal actualizado correctamente ✅', 'success')
+    } catch {
+      toast('Error al guardar el correo PayPal', 'error')
+    }
     finally { setLoading(false) }
   }
 

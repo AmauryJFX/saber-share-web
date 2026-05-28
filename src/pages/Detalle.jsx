@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 import {
   getOpinionesCurso, getOpinionesServicio,
   getHistorial, getSlotsPorServicio,
@@ -12,6 +13,7 @@ export default function Detalle() {
   const { state: pub } = useLocation()
   const { usuario } = useAuth()
   const navigate = useNavigate()
+  const toast = useToast()
 
   const [opiniones, setOpiniones]         = useState([])
   const [promedio, setPromedio]           = useState(0)
@@ -50,7 +52,6 @@ export default function Detalle() {
       )
       setYaCompro(comprado)
     } catch (e) {
-      console.error('Error historial:', e)
     }
 
     try {
@@ -176,7 +177,7 @@ export default function Detalle() {
                 style={{ height:52, borderRadius:14, border:'none', background:'linear-gradient(135deg, #65A30D 0%, #4D7C0F 100%)', color:'#fff', fontWeight:700, fontSize:15, cursor:'pointer', boxShadow:'0 8px 24px rgba(101,163,13,0.2)' }}>
                 💳 Comprar con PayPal
               </button>
-              <button onClick={() => alert('Compra el contenido para chatear')}
+              <button onClick={() => toast('Primero adquiere este contenido para poder contactar al vendedor', 'info')}
                 style={{ height:46, borderRadius:14, background:'transparent', border:'1px solid #E2E8F0', color:'#94A3B8', cursor:'pointer', fontSize:14 }}>
                 💬 Contactar vendedor
               </button>
@@ -197,9 +198,13 @@ export default function Detalle() {
                   <p style={{ color:'#64748B', fontSize:13 }}>🕐 {slot.hora}</p>
                 </div>
                 <button onClick={async () => {
-                  if (!window.confirm(`¿Reservar el ${slot.fecha} a las ${slot.hora}?`)) return
-                  await reservarSlot(slot.idAgenda, usuario.id)
-                  navigate(`/chat/${pub.autorId}/${encodeURIComponent(pub.autor)}`)
+                  try {
+                    await reservarSlot(slot.idAgenda, usuario.id)
+                    toast(`¡Reservaste el ${slot.fecha} a las ${slot.hora}! 🎉`, 'success')
+                    navigate(`/chat/${pub.autorId}/${encodeURIComponent(pub.autor)}`)
+                  } catch {
+                    toast('Error al reservar el horario', 'error')
+                  }
                 }} style={{ padding:'8px 18px', borderRadius:10, border:'none', background:'#2E70FF', color:'#fff', fontWeight:600, cursor:'pointer', fontSize:13 }}>Reservar</button>
               </div>
             ))}
@@ -233,6 +238,7 @@ function CalificarForm({ tipo, itemId, usuarioId, onEnviado }) {
   const [estrellas, setEstrellas] = useState(5)
   const [comentario, setComentario] = useState('')
   const [loading, setLoading] = useState(false)
+  const toast = useToast()
 
   const enviar = async () => {
     setLoading(true)
@@ -240,8 +246,11 @@ function CalificarForm({ tipo, itemId, usuarioId, onEnviado }) {
       const dto = { calOps: estrellas, comentOps: comentario || 'Sin comentario', usuarioId }
       if (tipo === 'CURSO') { dto.cursoId = parseInt(itemId); await calificarCurso(dto) }
       else { dto.servicioId = parseInt(itemId); await calificarServicio(dto) }
+      toast('¡Calificación enviada! Gracias por tu reseña ⭐', 'success')
       onEnviado()
-    } catch { alert('Error al enviar') }
+    } catch {
+      toast('Error al enviar la calificación', 'error')
+    }
     finally { setLoading(false) }
   }
 
