@@ -73,7 +73,8 @@ export default function Detalle() {
     </div>
   )
 
-  const esMia = pub?.autorId === usuario?.id
+  // Use String comparison to avoid Number vs String type mismatch from API/JWT
+  const esMia = String(pub?.autorId) === String(usuario?.id)
 
   if (loading) return (
     <div style={{ minHeight:'100vh', background:'#FFFFFF', display:'flex', alignItems:'center', justifyContent:'center' }}>

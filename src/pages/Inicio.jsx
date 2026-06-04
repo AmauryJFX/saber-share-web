@@ -295,7 +295,7 @@ export default function Inicio() {
                 key={`${p.tipo}-${p.id}`}
                 p={p}
                 index={index}
-                esMia={p.autorId === usuario?.id}
+                esMia={String(p.autorId) === String(usuario?.id)}
                 onClick={() => navigate(`/detalle/${p.tipo}/${p.id}`, { state: p })}
               />
             ))}

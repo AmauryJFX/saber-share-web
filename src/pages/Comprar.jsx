@@ -11,9 +11,10 @@ export default function Comprar() {
   const { state: pub } = useLocation()
   const { usuario } = useAuth()
   const navigate = useNavigate()
-  const [loading, setLoading] = useState(false)
-  const [error, setError]     = useState('')
-  const [exitoso, setExitoso] = useState(false)
+  const [loading, setLoading]   = useState(false)
+  const [error, setError]       = useState('')
+  const [exitoso, setExitoso]   = useState(false)
+  const [cooldown, setCooldown] = useState(false)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -43,6 +44,7 @@ export default function Comprar() {
   }
 
   const handlePagar = async () => {
+    if (loading || cooldown) return
     setLoading(true); setError('')
     try {
       sessionStorage.setItem('paypal_pending', JSON.stringify({
@@ -64,10 +66,13 @@ export default function Comprar() {
       const msg = err.response?.data?.mensaje
         || err.response?.data?.message
         || err.response?.data
-        || (err.code === 'ECONNABORTED' ? 'El servidor tardó demasiado. El backend puede estar iniciando, espera unos segundos e intenta de nuevo.' : null)
+        || (err.code === 'ECONNABORTED' ? 'El servidor tardó demasiado. Espera unos segundos e intenta de nuevo.' : null)
         || 'Error de conexión con el servidor. Verifica tu internet e intenta de nuevo.'
       setError(typeof msg === 'string' ? msg : JSON.stringify(msg))
       setLoading(false)
+      // 4s cooldown so user can't spam PayPal on error
+      setCooldown(true)
+      setTimeout(() => setCooldown(false), 4000)
     }
   }
 
@@ -208,19 +213,21 @@ export default function Comprar() {
               <span style={{ fontSize: 18, flexShrink: 0 }}>⚠️</span>
               <p style={{ color: '#ef4444', fontSize: 13, lineHeight: 1.55 }}>{error}</p>
             </div>
-            <button onClick={handlePagar} style={{
+            <button onClick={handlePagar} disabled={cooldown} style={{
               width: '100%', height: 38, borderRadius: 10, border: 'none',
-              background: 'rgba(239,68,68,0.12)', color: '#ef4444',
-              fontWeight: 700, cursor: 'pointer', fontSize: 13,
-            }}>↻ Reintentar</button>
+              background: cooldown ? '#F1F5F9' : 'rgba(239,68,68,0.12)',
+              color: cooldown ? '#94A3B8' : '#ef4444',
+              fontWeight: 700, cursor: cooldown ? 'not-allowed' : 'pointer', fontSize: 13,
+              transition: 'all 0.2s',
+            }}>{cooldown ? 'Espera...' : '↻ Reintentar'}</button>
           </div>
         )}
 
         {/* Botón PayPal */}
-        <button onClick={handlePagar} disabled={loading}
+        <button onClick={handlePagar} disabled={loading || cooldown}
           style={{
             width: '100%', height: 54, borderRadius: 14, border: 'none',
-            background: loading ? 'var(--bg-card)' : '#0070ba',
+            background: loading || cooldown ? 'var(--bg-card)' : '#0070ba',
             color: '#fff', fontSize: 16, fontWeight: 700,
             cursor: loading ? 'not-allowed' : 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
