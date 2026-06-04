@@ -5,7 +5,6 @@ import logo from '../assets/logo_sabershare.png'
 
 export default function Registro() {
   const [form, setForm]       = useState({ user:'', nombre:'', apellido:'', correo:'', telefono:'', password:'' })
-  const [rol, setRol]         = useState('USUARIO')
   const [error, setError]     = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
@@ -19,9 +18,9 @@ export default function Registro() {
     }
     setLoading(true); setError('')
     try {
-      await registrarUsuario({ ...form, rol })
+      await registrarUsuario(form)
       navigate('/login')
-    } catch { setError('Error al registrar. Intenta con otro usuario o correo.') }
+    } catch { setError('Error al registrar. Intenta con otro usuario.') }
     finally { setLoading(false) }
   }
 
@@ -87,35 +86,6 @@ export default function Registro() {
                 </div>
               </div>
             ))}
-
-            {/* Rol selector */}
-            <div>
-              <p style={{ fontSize:11, color:'#94A3B8', fontWeight:600, letterSpacing:'0.07em', marginBottom:8 }}>
-                ¿QUÉ QUIERES HACER EN SABERSHARE?
-              </p>
-              <div style={{ display:'flex', gap:10 }}>
-                {[
-                  { value:'USUARIO', icon:'🎓', label:'Aprender', desc:'Compra cursos y clases' },
-                  { value:'CHALAN',  icon:'✨', label:'Enseñar',  desc:'Publica y vende contenido' },
-                ].map(r => (
-                  <div
-                    key={r.value}
-                    onClick={() => setRol(r.value)}
-                    style={{
-                      flex:1, padding:'12px 10px', borderRadius:14, cursor:'pointer',
-                      background: rol === r.value ? '#FFFFFF' : '#F8FAFC',
-                      border: `2px solid ${rol === r.value ? '#2E70FF' : '#E2E8F0'}`,
-                      boxShadow: rol === r.value ? '0 4px 16px rgba(46,112,255,0.12)' : 'none',
-                      transition:'all 0.2s', textAlign:'center',
-                    }}
-                  >
-                    <p style={{ fontSize:22, marginBottom:4 }}>{r.icon}</p>
-                    <p style={{ fontSize:13, fontWeight:700, color: rol === r.value ? '#2E70FF' : '#0F172A', marginBottom:2 }}>{r.label}</p>
-                    <p style={{ fontSize:10, color:'#94A3B8', lineHeight:1.3 }}>{r.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
 
             {error && (
               <div style={{
