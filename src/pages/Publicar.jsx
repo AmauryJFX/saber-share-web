@@ -6,7 +6,7 @@ import { useToast } from '../context/ToastContext'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export default function Publicar() {
-  const { usuario } = useAuth()
+  const { usuario, esVendedor } = useAuth()
   const navigate = useNavigate()
   const toast = useToast()
 
@@ -45,12 +45,57 @@ export default function Publicar() {
       }
       toast('¡Publicación creada exitosamente! 🚀', 'success')
       navigate('/')
-    } catch {
-      setError('Error al publicar. Intenta de nuevo.')
+    } catch (err) {
+      if (err.response?.status === 403) {
+        setError('Tu cuenta no tiene permisos para publicar. Necesitas registrarte como vendedor (rol CHALAN).')
+      } else {
+        setError('Error al publicar. Intenta de nuevo.')
+      }
     } finally { setLoading(false) }
   }
 
   const tieneContenido = titulo.trim() || descripcion.trim() || precio
+
+  // Guard: only vendors (CHALAN / ADMIN) can publish
+  if (!esVendedor) {
+    return (
+      <div style={{
+        background: '#F8FAFC', minHeight: '100vh',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        flexDirection: 'column', gap: 16, padding: 32, textAlign: 'center',
+      }}>
+        <div style={{
+          width: 80, height: 80, borderRadius: '50%',
+          background: 'rgba(101,163,13,0.10)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 38,
+        }}>🔒</div>
+        <h2 style={{ fontSize: 22, fontFamily: 'Syne, sans-serif', color: '#0F172A', margin: 0 }}>
+          Cuenta de vendedor requerida
+        </h2>
+        <p style={{ color: '#64748B', fontSize: 14, lineHeight: 1.7, maxWidth: 320 }}>
+          Para publicar cursos y clases necesitas una cuenta con rol <strong>Vendedor (CHALAN)</strong>.
+          Crea una cuenta nueva seleccionando "Enseñar" en el registro.
+        </p>
+        <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
+          <button onClick={() => navigate('/registro')} style={{
+            padding: '12px 28px', borderRadius: 14, border: 'none',
+            background: 'linear-gradient(135deg, #65A30D, #4D7C0F)',
+            color: '#fff', fontWeight: 700, fontSize: 14, cursor: 'pointer',
+            boxShadow: '0 8px 24px rgba(101,163,13,0.25)',
+          }}>Crear cuenta vendedor</button>
+          <button onClick={() => navigate('/')} style={{
+            padding: '12px 20px', borderRadius: 14,
+            background: 'transparent', border: '1.5px solid #E2E8F0',
+            color: '#64748B', fontWeight: 600, fontSize: 14, cursor: 'pointer',
+          }}>Volver</button>
+        </div>
+        <p style={{ fontSize: 12, color: '#94A3B8', marginTop: 4 }}>
+          Tu cuenta actual: <strong>{usuario?.rol || 'USUARIO'}</strong>
+        </p>
+      </div>
+    )
+  }
 
   return (
     <div style={{ background: '#F8FAFC', minHeight: '100vh', paddingBottom: 110 }}>
