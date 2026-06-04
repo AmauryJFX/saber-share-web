@@ -30,6 +30,7 @@ export const getConversacion = (u1, u2) => api.get(`/mensajes/conversacion?user1
 export const enviarMensaje = (d) => api.post('/mensajes', d);
 export const getInbox = (id) => api.get(`/mensajes/inbox?userId=${id}`);
 export const getHistorial = (id) => api.get(`/historial/usuario/${id}`);
+export const getHistorialVentas = (vendedorId) => api.get(`/historial/vendedor/${vendedorId}`);
 export const getOpinionesCurso = (id) => api.get(`/opiniones/cursos/${id}`)
 export const getOpinionesServicio = (id) => api.get(`/opinion_servicio/servicio/${id}`);
 export const calificarCurso = (d) => api.post('/opiniones/cursos', d)

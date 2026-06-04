@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { getSaldo, actualizarCorreoPaypal, getCursos, getServicios, getHistorial } from '../api/api'
+import { getSaldo, actualizarCorreoPaypal, getCursos, getServicios, getHistorialVentas } from '../api/api'
 import { useToast } from '../context/ToastContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -14,20 +14,20 @@ function EstadisticasModal({ usuarioId, onClose }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    getHistorial(usuarioId)
+    getHistorialVentas(usuarioId)
       .then(r => setHistorial(r.data || []))
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [usuarioId])
 
-  // Compute summary
-  const cursosSold = historial.filter(h => h.tipo === 'CURSO').length
-  const clasesSold = historial.filter(h => h.tipo === 'CLASE').length
+  // DTO fields: idHistorial, fechapago, pago, usuario_idUsuario, cursoId, servicioId
+  const cursosSold = historial.filter(h => h.cursoId    != null).length
+  const clasesSold = historial.filter(h => h.servicioId != null).length
   const totalItems = historial.length
-  const totalEarned = historial.reduce((s, h) => s + ((h.monto || h.precio || 0) * 0.9), 0)
+  const totalEarned = historial.reduce((s, h) => s + ((h.pago || 0) * 0.9), 0)
   const avgSale = totalItems > 0 ? totalEarned / totalItems : 0
 
-  // Monthly bar chart — last 6 months
+  // Monthly bar chart — last 6 months (field: fechapago = "YYYY-MM-DD")
   const getLast6 = () => {
     const now = new Date()
     return Array.from({ length: 6 }, (_, i) => {
@@ -42,8 +42,8 @@ function EstadisticasModal({ usuarioId, onClose }) {
   const monthlyData = months.map(m => ({
     name: m.label,
     total: historial
-      .filter(h => (h.fecha || h.fechaCompra || '').startsWith(m.key))
-      .reduce((s, h) => s + ((h.monto || h.precio || 0) * 0.9), 0),
+      .filter(h => (h.fechapago || '').startsWith(m.key))
+      .reduce((s, h) => s + ((h.pago || 0) * 0.9), 0),
   }))
 
   const pieData = [
