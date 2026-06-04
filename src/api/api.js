@@ -7,6 +7,19 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Auto-logout when the backend returns 401 (expired/invalid token)
+api.interceptors.response.use(
+  res => res,
+  err => {
+    if (err.response?.status === 401) {
+      localStorage.removeItem('ss_token');
+      localStorage.removeItem('ss_usuario');
+      window.location.href = '/login';
+    }
+    return Promise.reject(err);
+  }
+);
+
 export default api;
 export const loginAuth = (correo, password) => api.post('/auth/login', { correo, password });
 export const loginUsuario = (u) => api.get(`/usuario?user=${u}`);
