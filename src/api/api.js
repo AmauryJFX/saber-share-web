@@ -1,5 +1,5 @@
 import axios from 'axios';
-const api = axios.create({ baseURL: 'https://sabersharebda-production.up.railway.app/api', timeout: 10000 });
+const api = axios.create({ baseURL: 'https://sabersharebda-production.up.railway.app/api', timeout: 30000 });
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('ss_token');
@@ -25,9 +25,9 @@ export const getSlotsPorServicio = (id) => api.get(`/agenda/servicio/${id}`);
 export const crearSlot = (d) => api.post('/agenda', d);
 export const reservarSlot = (id, alumnoId) => api.put(`/agenda/reservar/${id}?idAlumno=${alumnoId}`);
 export const eliminarSlot = (id) => api.delete(`/agenda/${id}`);
-export const iniciarPago = (d) => api.post('/paypal/pagar', d);
+export const iniciarPago = (d) => api.post('/paypal/pagar', d, { timeout: 45000 });
 export const confirmarPago = (pId, pyId, uId, iId, t) =>
-  api.get(`/paypal/confirmar?paymentId=${pId}&PayerID=${pyId}&usuarioId=${uId}&itemId=${iId}&tipo=${t}`);
+  api.get(`/paypal/confirmar?paymentId=${pId}&PayerID=${pyId}&usuarioId=${uId}&itemId=${iId}&tipo=${t}`, { timeout: 45000 });
 export const getSaldo = (id) => api.get(`/usuario/${id}/saldo`);
 export const actualizarCorreoPaypal = (id, d) => api.put(`/usuario/${id}/correo-paypal`, d);
 export const crearCurso = (d) => api.post('/curso', d);

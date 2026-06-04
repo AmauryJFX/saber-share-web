@@ -57,11 +57,16 @@ export default function Comprar() {
       if (res.data?.approvalUrl) {
         window.location.href = res.data.approvalUrl
       } else {
-        setError('No se pudo crear el pago')
+        setError('No se recibió la URL de PayPal. Intenta de nuevo.')
         setLoading(false)
       }
-    } catch {
-      setError('Error de conexión')
+    } catch (err) {
+      const msg = err.response?.data?.mensaje
+        || err.response?.data?.message
+        || err.response?.data
+        || (err.code === 'ECONNABORTED' ? 'El servidor tardó demasiado. El backend puede estar iniciando, espera unos segundos e intenta de nuevo.' : null)
+        || 'Error de conexión con el servidor. Verifica tu internet e intenta de nuevo.'
+      setError(typeof msg === 'string' ? msg : JSON.stringify(msg))
       setLoading(false)
     }
   }
@@ -196,10 +201,19 @@ export default function Comprar() {
 
         {error && (
           <div style={{
-            background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)',
-            borderRadius: 12, padding: '12px 16px', marginBottom: 16,
-            color: 'var(--error)', fontSize: 13,
-          }}>⚠️ {error}</div>
+            background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.25)',
+            borderRadius: 14, padding: '14px 16px', marginBottom: 16,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
+              <span style={{ fontSize: 18, flexShrink: 0 }}>⚠️</span>
+              <p style={{ color: '#ef4444', fontSize: 13, lineHeight: 1.55 }}>{error}</p>
+            </div>
+            <button onClick={handlePagar} style={{
+              width: '100%', height: 38, borderRadius: 10, border: 'none',
+              background: 'rgba(239,68,68,0.12)', color: '#ef4444',
+              fontWeight: 700, cursor: 'pointer', fontSize: 13,
+            }}>↻ Reintentar</button>
+          </div>
         )}
 
         {/* Botón PayPal */}
@@ -213,7 +227,10 @@ export default function Comprar() {
             boxShadow: loading ? 'none' : '0 8px 24px rgba(0,112,186,0.35)',
             transition: 'all 0.2s', marginBottom: 12,
           }}>
-          {loading ? <><div className="spinner" style={{ width: 20, height: 20, borderWidth: 2 }} />Procesando...</> : '🔒 Pagar con PayPal'}
+          {loading
+            ? <><div className="spinner" style={{ width: 20, height: 20, borderWidth: 2, borderTopColor: '#fff' }} />Conectando con PayPal...</>
+            : '🔒 Pagar con PayPal'
+          }
         </button>
 
         <button onClick={() => navigate(-1)} style={{
